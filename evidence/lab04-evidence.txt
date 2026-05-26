@@ -1,0 +1,29 @@
+﻿FIT4110 Lab 04 Evidence
+
+GET /health:
+{"status":"ok","service":"iot-ingestion","version":"0.4.0"}
+
+Container logs:
+INFO:     127.0.0.1:48088 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45868 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33172 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38592 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34810 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46772 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37572 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55712 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53144 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46022 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54238 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46408 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.17.0.1:38670 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45090 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.17.0.1:57320 - "GET /health HTTP/1.1" 200 OK
+
+Newman:
+11 requests, 19 assertions, 0 failed
+
+Pushed image:
+ghcr.io/hung981vpp/team-iot:v0.1.0-team-iot e7b715cb61a8 268MB
+ghcr.io/hung981vpp/team-iot:v0.1.0-team-iot
+digest: sha256:e7b715cb61a8fec07af5cb0f548f14b68c2a1c94509989a6f507b0e24f5aeeb3
