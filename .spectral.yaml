@@ -1,0 +1,10 @@
+rules:
+  openapi-document-version:
+    description: OpenAPI document must declare version 3.x.
+    message: OpenAPI version must start with 3.
+    given: $.openapi
+    severity: error
+    then:
+      function: pattern
+      functionOptions:
+        match: "^3\\."
