@@ -1,92 +1,152 @@
-# RUN_LOCAL.md – Hướng dẫn chạy Lab 04
+﻿# Chạy local - FIT4110 Lab 04
 
-Tài liệu này giúp người khác clone repo sạch và chạy lại service trong Docker.
+Tài liệu này hướng dẫn cách chạy IoT ingestion service bằng Docker và kiểm tra lại bằng Newman/Postman.
 
----
+## Yêu cầu trước khi chạy
 
-## 1. Clone repo
+- Đã cài Docker Desktop và Docker đang chạy.
+- Đã cài Node.js và npm.
+- Các lệnh bên dưới dùng cho PowerShell trên Windows.
 
-```bash
-git clone <repo-url>
-cd FIT4110_lab04_docker_packaging
+## 1. Cài dependencies cho Newman/Prism/Spectral
+
+```powershell
+npm.cmd install
 ```
 
----
+Nếu PowerShell không chặn `npm`, có thể dùng:
 
-## 2. Cài dependencies cho Newman/Prism/Spectral
-
-```bash
+```powershell
 npm install
 ```
 
----
+## 2. Build Docker image
 
-## 3. Build Docker image
-
-```bash
+```powershell
 docker build -t fit4110/iot-ingestion:lab04 .
 ```
 
----
+## 3. Chạy container
 
-## 4. Run container
+Chạy foreground để xem log trực tiếp:
 
-```bash
-docker run --rm \
-  --name fit4110-iot-lab04 \
-  -p 8000:8000 \
-  --env-file .env.example \
-  fit4110/iot-ingestion:lab04
+```powershell
+docker run --rm --name fit4110-iot-lab04 -p 8000:8000 --env-file .env.example fit4110/iot-ingestion:lab04
 ```
 
-Mở terminal khác, kiểm tra:
+Chạy detached ở background:
 
-```bash
-curl http://localhost:8000/health
+```powershell
+docker run -d --rm --name fit4110-iot-lab04 -p 8000:8000 --env-file .env.example fit4110/iot-ingestion:lab04
+```
+
+## 4. Kiểm tra health endpoint
+
+```powershell
+Invoke-WebRequest -UseBasicParsing http://localhost:8000/health | Select-Object -ExpandProperty Content
 ```
 
 Kết quả mong đợi:
 
 ```json
-{
-  "status": "ok",
-  "service": "iot-ingestion",
-  "version": "0.4.0"
-}
+{"status":"ok","service":"iot-ingestion","version":"0.4.0"}
 ```
 
----
+Lệnh tương đương bằng `curl`:
+
+```powershell
+curl http://localhost:8000/health
+```
 
 ## 5. Chạy Newman test trên container
 
-```bash
-npm run test:local
+```powershell
+npm.cmd run test:local
 ```
 
-Report sinh tại:
+Kết quả mong đợi:
+
+```text
+requests:   11 executed, 0 failed
+assertions: 19 executed, 0 failed
+```
+
+Report được sinh tại:
 
 ```text
 reports/newman-lab04-local.xml
 reports/newman-lab04-local.html
 ```
 
----
+## 6. Artefact cần nộp
 
-## 6. Dừng container
+Các artefact cho team `team-iot`:
 
-Nếu không dùng `--rm` hoặc container còn chạy:
+```text
+Dockerfile
+.dockerignore
+.env.example
+RUN_LOCAL.md
+contracts/team-iot.openapi.yaml
+postman/collections/team-iot.postman_collection.json
+postman/environments/team-iot_local.postman_environment.json
+reports/newman-lab04-local.xml
+reports/newman-lab04-local.html
+```
 
-```bash
+## 7. Bằng chứng image tag và registry
+
+Image local của lab:
+
+```text
+fit4110/iot-ingestion:lab04
+```
+
+Image đã push lên GHCR:
+
+```text
+ghcr.io/hung981vpp/team-iot:v0.1.0-team-iot
+```
+
+Digest sau khi push thành công:
+
+```text
+sha256:e7b715cb61a8fec07af5cb0f548f14b68c2a1c94509989a6f507b0e24f5aeeb3
+```
+
+Nếu cần push lại sau khi login:
+
+```powershell
+docker login ghcr.io
+docker push ghcr.io/hung981vpp/team-iot:v0.1.0-team-iot
+```
+
+## 8. Dừng container
+
+```powershell
 docker stop fit4110-iot-lab04
 ```
 
----
+## 9. Lệnh nhanh bằng Makefile
 
-## 7. Lệnh nhanh
+Nếu máy có `make`, có thể dùng:
 
-```bash
+```powershell
+make install
+make lint
 make build
 make run
 make test-docker
 make stop
+```
+
+Các lệnh PowerShell tương đương:
+
+```powershell
+npm.cmd install
+npm.cmd run lint:openapi
+docker build -t fit4110/iot-ingestion:lab04 .
+docker run --rm --name fit4110-iot-lab04 -p 8000:8000 --env-file .env.example fit4110/iot-ingestion:lab04
+npm.cmd run test:local
+docker stop fit4110-iot-lab04
 ```
